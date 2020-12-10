@@ -106,6 +106,17 @@ typedef struct{
 	};
 } t_move;
 
+typedef struct{
+	int nbVilles;			
+	int nbRoutes;
+	int* routes;				
+} t_plateau;
+
+typedef struct{
+	int nbWagons;			
+	int nbCartes;
+	int nbObjectives:				
+} t_joueur;
 
 /* -------------------------------------
  * Initialize connection with the server
