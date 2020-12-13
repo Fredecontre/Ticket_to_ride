@@ -1,5 +1,5 @@
 Jeu: jeu.o clientAPI.o TicketToRideAPI.o
-	gcc -o Jeu clientAPI.o TicketToRideAPI.o jeu.o
+	gcc -o Jeu clientAPI.o TicketToRideAPI.o jeu.o -g
 	
 clientAPI.o: clientAPI.h
 	gcc -c clientAPI.c

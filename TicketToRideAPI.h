@@ -106,6 +106,7 @@ typedef struct{
 	};
 } t_move;
 
+
 typedef struct{
 	int nbVilles;			
 	int nbRoutes;
@@ -115,8 +116,18 @@ typedef struct{
 typedef struct{
 	int nbWagons;			
 	int nbCartes;
-	int nbObjectives:				
+	int nbObjectifs;
+	t_color* cartes;
+	t_objective* objectifs;				
 } t_joueur;
+
+typedef struct{
+	int numJoueur;			
+	int monNumero;
+	t_color* cartes;
+	t_plateau plateau;
+	t_joueur* joeurs;				
+} t_partie;
 
 /* -------------------------------------
  * Initialize connection with the server
