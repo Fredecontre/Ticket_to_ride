@@ -106,31 +106,6 @@ typedef struct{
 	};
 } t_move;
 
-/*
-typedef struct{
-	int nbVilles;			
-	int nbRoutes;
-	int* routes;				
-} t_plateau;
-
-typedef struct{
-	char nom[20];
-	int nbWagons;			
-	int nbCartes;
-	int nbObjectifs;
-	int cartes[10];
-	t_objective objectifs[20];				
-} t_joueur;
-
-typedef struct{
-	int numJoueur;			
-	int monNumero;
-	char nom[20];
-	t_color faceUp[5];
-	t_plateau plateau;
-	t_joueur joeurs[2];				
-} t_partie;
-*/
 
 typedef struct{
 	int city1, city2;				/* id of the cities */
