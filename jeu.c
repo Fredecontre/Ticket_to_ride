@@ -20,36 +20,36 @@ int initJeu(char gameName[50],int nbCities,int nbTracks,int*tracks,t_color faceU
 	return player;
 }
 
-t_return_code retour miseAJour(t_move *mouv,t_joueur* joueur){
+/*t_return_code miseAJour(t_move *mouv,t_joueur* joueur){
 	t_return_code retour;
-	if(mouv==4){
+	if(mouv->type==DRAW_OBJECTIVES){
+		joueur->nbObjectives++;
 		retour=drawObjectives(joueur->objectives);
-		retourchooseObjectives(joeur->objectives[joueur->nbObjectives]);
+		retour=chooseObjectives(joueur->objectives[joueur->nbObjectives]);
 	}
 	
-	if(mouv==5){
-		joueur->nbObjectives++;
-		retour=chooseObjectives(joeur->objectives[joueur->nbObjectives]);
+	else if(mouv->type==CHOOSE_OBJECTIVES){
+	
+		retour=chooseObjectives(joueur->objectives[joueur->nbObjectives]);
 	}
 	return retour;
-}
+}*/
 
-t_return_code ajouteCarte(t_joueur* joueur,t_color carte){
+void ajouteCarte(t_joueur* joueur,t_color carte){
 
-	t_return_code retour=drawBlindCard(joueur->cards);
+
+	joueur->cards[carte]++;
 	joueur->nbCards++;
 	
-	
-	return retour;
+
 }
 
-t_return_code retireCarte(t_joueur* joueur){
+void retireCarte(t_joueur* joueur,t_color carte){
 
-	t_return_code retour;
+	joueur->cards[carte]--;
 	joueur->nbCards--;
 	
 	
-	return retour;
 }
 
 int main(){
@@ -61,7 +61,7 @@ int main(){
 	int joueur;
 	
 	t_color faceUp[5];
-	t_color cards[4];
+	t_color cartes[4];
 	t_return_code retour;
 	t_color* card=malloc(50*sizeof(t_color));
 	t_color dernierCoup=NONE;
@@ -75,8 +75,10 @@ int main(){
     
     t_joueur* joueur1;  //L'opposant
     
-    t_partie* jeu=malloc(sizeof(t_partie));
+    t_partie* jeu;
+    //malloc(sizeof(t_partie));
     //*(jeu->name)=malloc(20*sizeof(char));
+    jeu->faceUp=malloc(5*sizeof(t_color));
     
   
     
@@ -92,7 +94,11 @@ int main(){
 	
 	
 	//jeu->player=initJeu(gameName,nbCities,nbTracks,tracks,faceUp,cards);
-	jeu->player=getMap(tracks,faceUp,cards);	
+	jeu->player=getMap(tracks,jeu->faceUp,cartes);
+	
+	for(int i=0; i<3 ; i++){
+		ajouteCarte(joueur0,cartes[i]);
+	}	
 
 	
 	/*boucle du jeu*/
