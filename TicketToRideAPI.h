@@ -131,6 +131,18 @@ typedef struct{
 	t_joueur players[2];
 } t_partie;
 
+typedef struct{
+	int city1;
+	int city2;                      
+	int longueur;					 /* longueur de la route: 0 si prise par nous */
+	t_color couleur1;                /*couleur de la route*/
+	t_color couleur2;                /*deuxième couleur de la route si elle est double*/
+	int disponible;				     /* 0 si prise par l'adversaire, 1 sinon*/
+	
+	
+} t_route;
+
+
 /* -------------------------------------
  * Initialize connection with the server
  * Quit the program if the connection to the server

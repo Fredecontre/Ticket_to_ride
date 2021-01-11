@@ -3,7 +3,7 @@
 
 #define N 12
 
-int* cheminPlusCourt(int src,int* G[N][N],int des){
+int* cheminPlusCourt(int src,int G[N][N],int des){
 	int Prec[N];
 	int D[N];
 	int Visite[N];

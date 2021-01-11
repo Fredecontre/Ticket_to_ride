@@ -1,9 +1,27 @@
 //
 // Created by Thib on 14/12/2020.
 //
+#define N 100
 
 #include "move.h"
 
+
+void ajouteCarte(t_joueur* joueur,t_color carte){
+
+
+	joueur->cards[carte]++;
+	joueur->nbCards++;
+	
+
+}
+
+void retireCarte(t_joueur* joueur,t_color carte){
+
+	joueur->cards[carte]--;
+	joueur->nbCards--;
+	
+	
+}
 
 /* ask for a move */
 void askMove(t_move* move){
@@ -38,13 +56,14 @@ void askMove(t_move* move){
 
 /* plays the move given as a parameter (send to the server)
  * returns the return code */
-t_return_code playOurMove(t_move* move, t_color* lastCard){
+t_return_code playOurMove(t_move* move, t_color* lastCard,t_joueur* joueur){
 	t_return_code ret;
 
 	switch (move->type) {
 		case CLAIM_ROUTE:
 			ret = claimRoute(move->claimRoute.city1, move->claimRoute.city2, move->claimRoute.color, move->claimRoute.nbLocomotives);
 			*lastCard = NONE;
+			//joueur->nbCards--;
 			break;
 		case DRAW_CARD:
 			ret = drawCard(move->drawCard.card, move->drawCard.faceUp);
@@ -88,3 +107,48 @@ int needReplay(t_move* move, t_color lastCard){
 
 	return replay;
 }
+
+
+int* cheminPlusCourt(int src,t_route* G[N][N],int dest,int D[N]){
+	int Prec[N];
+	
+	int Visite[N];
+	int i,u,v;
+	
+	for(i=0;i<N;i++){
+		D[i]=999;
+		Visite[i]=0;
+	}
+	
+	D[src]=0;
+	u=src;
+	while(u!=dest){
+		u=distanceMini(D,Visite);
+		Visite[u]=1;
+		for(v=0;v<N;v++){
+			if ((Visite[v]==0) && (G[u][v]->disponible) && (D[u] + G[u][v]->longueur < D[v])){
+				D[v]=D[u] + G[u][v]->longueur;
+				Prec[v]=u;
+			}
+		}
+	}
+	return D;
+}
+
+int distanceMini(int D[N],int Visite[N]){
+	
+	int min,indice_min;
+	
+	min=999;
+	for(int i=0;i<N;i++){
+		if (Visite[i]==0 && D[i]<min){
+			min=D[i];
+			indice_min=i;
+		}
+	
+	}
+	return indice_min;
+
+}
+
+
