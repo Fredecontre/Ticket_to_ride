@@ -124,12 +124,6 @@ typedef struct{
 } t_joueur;
 
 
-typedef struct{
-	char name[20];					/* name of the game */
-	t_color faceUp[5];				/* face up cards */
-	int player;						/* player who plays: 0 == US, 1 == OPPONNENT */
-	t_joueur players[2];
-} t_partie;
 
 typedef struct{
 	int city1;
@@ -137,10 +131,18 @@ typedef struct{
 	int longueur;					 /* longueur de la route: 0 si prise par nous */
 	t_color couleur1;                /*couleur de la route*/
 	t_color couleur2;                /*deuxième couleur de la route si elle est double*/
-	int disponible;				     /* 0 si prise par l'adversaire, 1 sinon*/
+	int disponible;				     /* 0 si prise par l'adversaire, 1 si prise par moi, 2 si libre*/
 	
 	
 } t_route;
+
+typedef struct{
+	char name[20];					/* name of the game */
+	t_color faceUp[5];				/* face up cards */
+	int player;						/* player who plays: 0 == US, 1 == OPPONNENT */
+	t_joueur players[2];
+	t_route* routes;
+} t_partie;
 
 
 /* -------------------------------------

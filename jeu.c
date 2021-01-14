@@ -42,34 +42,28 @@ int main(){
 	int nbCities;
 	int nbTracks;
 	
-	int joueur;
-	
 	t_color faceUp[5];
 	t_color cartes[4];
 	t_return_code retour;
-	t_color* card=malloc(50*sizeof(t_color));
 	t_color dernierCoup=NONE;
 	
     int replay=0;
     t_move mouv;
     t_objective obj[3];
-    /*int src, dest;
-    int G[100][100];
+    int src, dest;
+    //t_route* T[100][100];
     int D[200];
-  */
-     int nbTours=0;
+  
+    int nbTours=0;
     int i=0;
     int choix;
     
     t_joueur* joueur0=malloc(sizeof(t_joueur));  //Nous
-    //*(joueur0->name)=malloc(20*sizeof(char));
-    
-    t_joueur* joueur1=malloc(sizeof(t_partie));  //L'opposant
+
+    t_joueur* joueur1=malloc(sizeof(t_joueur));  //L'opposant
     
     t_partie* jeu=malloc(sizeof(t_partie));
-    //malloc(sizeof(t_partie));
-    //*(jeu->name)=malloc(20*sizeof(char));
-    //jeu->faceUp=malloc(5*sizeof(t_color));
+  
     
   
     
@@ -83,9 +77,21 @@ int main(){
 	
 	waitForT2RGame("TRAINING PLAY_RANDOM timeout=10000",gameName, &nbCities, &nbTracks);
 	
-	
-	//jeu->player=initJeu(gameName,nbCities,nbTracks,tracks,faceUp,cards);
 	jeu->player=getMap(tracks,faceUp,cartes);
+	
+	/*   //Remplissage tableau des routes
+	for(i=0;i<nbCities;i++){
+		T[tracks[i]][tracks[i+1]]->city1=tracks[i];
+		T[tracks[i]][tracks[i+1]]->city2=tracks[i+1];
+		T[tracks[i]][tracks[i+1]]->longueur=tracks[i+2];
+		T[tracks[i]][tracks[i+1]]->couleur1=tracks[i+3];
+		T[tracks[i]][tracks[i+1]]->couleur2=tracks[i+4];
+		
+		
+		i=i+5;   //On passe à la route suivante
+	}
+	*/
+	
 	
 	for(int i=0; i<3 ; i++){
 		ajouteCarte(joueur0,cartes[i]);
@@ -95,65 +101,72 @@ int main(){
 	/*boucle du jeu*/
 	do{
 		if(!replay)
-			printMap();
-		/*On est au premier tour*/	
-		if(!nbTours){  
-			//Distribution des objectifs au début du jeu
-			retour=drawObjectives(obj);
-			for(i=0; i<3; i++){
-				printf("%d. %d (", i, obj[i].city1);
-				printCity(obj[i].city1);
-				printf(") -> (");
-				printCity(obj[i].city2);
-				printf(") %d (%d pts)\n", obj[i].city2, obj[i].score);
-			}
-			printf("Quels objectifs voulez-vous garder? (choisir au moins 2)\n");
-			for(i=0; i<3; i++){
-				scanf("%d",&choix);
-				if(choix){
-					joueur0->objectives[joueur0->nbObjectives]=obj[i];
-					joueur0->nbObjectives++;
-				}
-			}
-			//retour=drawObjectives(joueur1->objectives);
-			
-			nbTours++;
-			continue;
-		}
-		else {
+			printMap();		
 	
-			if(jeu->player==0){  //Notre tour	
-					askMove(&mouv);
-					
-					replay = needReplay(&mouv, dernierCoup);
-					retour = playOurMove(&mouv, &dernierCoup,joueur0);
+		if(jeu->player==0){  //Notre tour	
+			/*On est au premier tour*/	
+			if(!nbTours){  
+				//Distribution des objectifs au début du jeu
+				
+				
+				retour=drawObjectives(obj);
+				
+				for(i=0; i<3; i++){
+					printf("%d. %d (", i, obj[i].city1);
+					printCity(obj[i].city1);
+					printf(") -> (");
+					printCity(obj[i].city2);
+					printf(") %d (%d pts)\n", obj[i].city2, obj[i].score);
+				}
+				printf("Quels objectifs voulez-vous garder? (choisir au moins 2)\n");
+				for(i=0; i<3; i++){
+					scanf("%d",&choix);
+					if(choix==1){
+						joueur0->objectives[joueur0->nbObjectives]=obj[i];
+						mouv.chooseObjectives.chosen[i]=1;
+						joueur0->nbObjectives++;
+					}
+					else
+						mouv.chooseObjectives.chosen[i]=0;
 				}
 				
+				retour = chooseObjectives(mouv.chooseObjectives.chosen);
+		
 				
+				nbTours++;
+				
+			}
+			else{
+				askMove(&mouv);
+				
+				replay = needReplay(&mouv, dernierCoup);
+				retour = playOurMove(&mouv, &dernierCoup,joueur0,jeu);
+			}
+		}
 			
 			
-			if(jeu->player==1) { //Tour de l'adversaire
-			 	/*On est au premier tour*/
-					retour=getMove(&mouv,&replay);
-					if(mouv.type==DRAW_BLIND_CARD){
-						ajouteCarte(joueur1,mouv.drawBlindCard.card);
-					}
-					else if(mouv.type==DRAW_CARD){
-						ajouteCarte(joueur1,mouv.drawCard.card);
-					}
-					else if(mouv.type==CLAIM_ROUTE){
-						for(int j=0; j<mouv.claimRoute.nbLocomotives;j++){
-							retireCarte(joueur1,mouv.claimRoute.color);
-						}
+		
+		
+		if(jeu->player==1) { //Tour de l'adversaire
+		 	/*On est au premier tour*/
+				retour=getMove(&mouv,&replay);
+				if(mouv.type==DRAW_BLIND_CARD){
+					ajouteCarte(joueur1,mouv.drawBlindCard.card);
+				}
+				else if(mouv.type==DRAW_CARD){
+					ajouteCarte(joueur1,mouv.drawCard.card);
+				}
+				else if(mouv.type==CLAIM_ROUTE){
+					for(int j=0; j<mouv.claimRoute.nbLocomotives;j++){
+						retireCarte(joueur1,mouv.claimRoute.color);
 					}
 				}
 			}
-			
-		
-		
-		/*Changer de joueur*/
+			/*Changer de joueur*/
 		if (retour==NORMAL_MOVE&& !replay)
 			jeu->player=!jeu->player;
+			
+			
 			
 			
 	} while(retour==NORMAL_MOVE);
@@ -161,7 +174,7 @@ int main(){
 	
 	
 	free(tracks);
-	free(card);
+
 	closeConnection();
 	
 

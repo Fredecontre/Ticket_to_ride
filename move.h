@@ -14,7 +14,7 @@ void askMove(t_move* move);
 
 /* plays the move given as a parameter (send to the server)
  * returns the return code */
-t_return_code playOurMove(t_move* move, t_color* lastCard,t_joueur* joueur);
+t_return_code playOurMove(t_move* move, t_color* lastCard,t_joueur* joueur,t_partie* jeu);
 
 /* tell if we need to replay */
 int needReplay(t_move* move, t_color lastCard);

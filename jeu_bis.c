@@ -89,7 +89,7 @@ int main(){
 	//jeu->player=initJeu(gameName,nbCities,nbTracks,tracks,faceUp,cards);
 	jeu->player=getMap(tracks,faceUp,cartes);
 	
-	/*for(i=0;i<nbCities;i++){
+	for(i=0;i<nbCities;i++){
 		T[tracks[i]][tracks[i+1]]->city1=tracks[i];
 		T[tracks[i]][tracks[i+1]]->city2=tracks[i+1];
 		T[tracks[i]][tracks[i+1]]->longueur=tracks[i+2];
@@ -98,7 +98,7 @@ int main(){
 		
 		
 		i=i+5;   //On passe à la route suivante
-	}*/
+	}
 	
 	
 	/*for(i=0; i<3 ; i++){
