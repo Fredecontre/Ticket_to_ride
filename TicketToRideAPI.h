@@ -141,7 +141,7 @@ typedef struct{
 	t_color faceUp[5];				/* face up cards */
 	int player;						/* player who plays: 0 == US, 1 == OPPONNENT */
 	t_joueur players[2];
-	t_route* routes;
+	t_route *routes[100][100];
 } t_partie;
 
 

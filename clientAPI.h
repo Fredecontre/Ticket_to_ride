@@ -1,5 +1,4 @@
 /*
-
 * ------------------------------ *
 |                                |
 |   -= Coding Game Server =-     |
@@ -7,13 +6,10 @@
 |       client API in C          |
 |                                |
 * ------------------------------ *
-
 Authors: T. Hilaire, J. Brajard
 Licence: GPL
-
 File: clientAPI.h
 	Functions' prototypes for the client API
-
 Copyright 2016-2020 T. Hilaire, J. Brajard
 */
 
@@ -25,8 +21,8 @@ Copyright 2016-2020 T. Hilaire, J. Brajard
 #include <stdio.h>
 
 
-#define MAX_GET_MOVE 128		/* maximum size of the string representing a move */
-#define MAX_MESSAGE 512			/* maximum size of the message move */
+#define MAX_GET_MOVE 128	    	/* maximum size of the string representing a move */
+#define MAX_MESSAGE 1024			/* maximum size of the message move */
 
 
 /* defines a return code, used for playMove and getMove */
@@ -174,3 +170,4 @@ void sendCGSComment( const char* fct, char* comment);
 
 
 #endif
+

@@ -1,7 +1,7 @@
 //
 // Created by Thib on 14/12/2020.
 //
-#define N 100
+#define N 36
 
 #include "move.h"
 
@@ -56,14 +56,16 @@ void askMove(t_move* move){
 
 /* plays the move given as a parameter (send to the server)
  * returns the return code */
-t_return_code playOurMove(t_move* move, t_color* lastCard,t_joueur* joueur, t_partie* jeu){
+t_return_code playOurMove(t_move* move, t_color* lastCard, t_partie* jeu){
 	t_return_code ret;
+	int choix=0;
+	t_objective obj[3];
 
 	switch (move->type) {
 		case CLAIM_ROUTE:
 			ret = claimRoute(move->claimRoute.city1, move->claimRoute.city2, move->claimRoute.color, move->claimRoute.nbLocomotives);
 			*lastCard = NONE;
-			//joueur->nbCards--;
+			//jeu->routes[move->claimRoute.city1][move->claimRoute.city2]->disponible=1;
 			break;
 		case DRAW_CARD:
 			ret = drawCard(move->drawCard.card, move->drawCard.faceUp);
@@ -82,6 +84,20 @@ t_return_code playOurMove(t_move* move, t_color* lastCard,t_joueur* joueur, t_pa
 				printCity(move->drawObjectives.objectives[i].city2);
 				printf(") %d (%d pts)\n", move->drawObjectives.objectives[i].city2, move->drawObjectives.objectives[i].score);
 			}
+			
+			for(int j=0; j<3; j++){
+				scanf("%d",&choix);
+				if(choix==1){
+					jeu->players[0].objectives[jeu->players[0].nbObjectives]=obj[j];
+					move->chooseObjectives.chosen[j]=1;
+					jeu->players[0].nbObjectives++;
+				}
+				else
+					move->chooseObjectives.chosen[j]=0;
+					
+			}
+			
+			ret=chooseObjectives(move->chooseObjectives.chosen);
 			*lastCard = NONE;
 			break;
 		case CHOOSE_OBJECTIVES:
@@ -109,9 +125,9 @@ int needReplay(t_move* move, t_color lastCard){
 }
 
 
-int* cheminPlusCourt(int src,t_route* G[N][N],int dest,int D[N]){
-	int Prec[N];
+void cheminPlusCourt(int src,int D[N],t_route* G[N][N],int Prec[N], int dest){
 	
+
 	int Visite[N];
 	int i,u,v;
 	
@@ -132,7 +148,6 @@ int* cheminPlusCourt(int src,t_route* G[N][N],int dest,int D[N]){
 			}
 		}
 	}
-	return D;
 }
 
 int distanceMini(int D[N],int Visite[N]){
@@ -151,4 +166,15 @@ int distanceMini(int D[N],int Visite[N]){
 
 }
 
+void afficheChemin(int src, int dest,int Prec[N]){
+	
+	int v = dest; 
+
+	while(v != src){
+		
+		v = Prec[v];
+		
+	}
+
+}
 
