@@ -66,7 +66,6 @@ t_return_code playOurMove(t_move* move, t_color* lastCard, t_partie* jeu){
 			ret = claimRoute(move->claimRoute.city1, move->claimRoute.city2, move->claimRoute.color, move->claimRoute.nbLocomotives);
 			*lastCard = NONE;
 			jeu->routes[move->claimRoute.city1][move->claimRoute.city2]->disponible=1;
-			jeu->routes[move->claimRoute.city1][move->claimRoute.city2]->longueur=0;
 			jeu->players[0].cards[move->claimRoute.color]-=move->claimRoute.nbLocomotives;
 			break;
 		case DRAW_CARD:
@@ -84,7 +83,7 @@ t_return_code playOurMove(t_move* move, t_color* lastCard, t_partie* jeu){
 			break;
 		case DRAW_OBJECTIVES:
 			ret = drawObjectives(move->drawObjectives.objectives);
-			/*for(int i=0; i<3; i++){
+			for(int i=0; i<3; i++){
 				printf("%d. %d (", i, move->drawObjectives.objectives[i].city1);
 				printCity(move->drawObjectives.objectives[i].city1);
 				printf(") -> (");
@@ -92,24 +91,16 @@ t_return_code playOurMove(t_move* move, t_color* lastCard, t_partie* jeu){
 				printf(") %d (%d pts)\n", move->drawObjectives.objectives[i].city2, move->drawObjectives.objectives[i].score);
 			}
 			
-			/*for(int j=0; j<3; j++){
+			for(int j=0; j<3; j++){
 				scanf("%d",&choix);
 				if(choix==1){
-					jeu->players[0].objectives[jeu->players[0].nbObjectives]=move->drawObjectives.objectives[i];
+					jeu->players[0].objectives[jeu->players[0].nbObjectives]=obj[j];
 					move->chooseObjectives.chosen[j]=1;
 					jeu->players[0].nbObjectives++;
 				}
 				else
 					move->chooseObjectives.chosen[j]=0;
 					
-			}*/
-			//Attribution objectifs
-			for(int j=0; j<3; j++){
-				
-					jeu->players[0].objectives[jeu->players[0].nbObjectives]=move->drawObjectives.objectives[j];
-					move->chooseObjectives.chosen[j]=1;
-					jeu->players[0].nbObjectives++;
-				
 			}
 			
 			ret=chooseObjectives(move->chooseObjectives.chosen);

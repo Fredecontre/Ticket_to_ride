@@ -107,12 +107,6 @@ typedef struct{
 } t_move;
 
 
-typedef struct{
-	int city1, city2;				/* id of the cities */
-	int length;						/* length of the track */
-	t_color color1, color2;			/* colors */
-	int taken;						/* tell if taken */
-} t_plateau;
 
 typedef struct{
 	char name[20];					/* name of the player */
