@@ -60,6 +60,7 @@ t_return_code playOurMove(t_move* move, t_color* lastCard, t_partie* jeu){
 	t_return_code ret;
 	int choix=0;
 	t_objective obj[3];
+	int chosen[3];
 
 	switch (move->type) {
 		case CLAIM_ROUTE:
@@ -73,17 +74,17 @@ t_return_code playOurMove(t_move* move, t_color* lastCard, t_partie* jeu){
 			ret = drawCard(move->drawCard.card, move->drawCard.faceUp);
 			*lastCard = (*lastCard==NONE && move->drawCard.card!= MULTICOLOR) ? move->drawCard.card : NONE;
 			jeu->players[0].cards[move->drawCard.card]++;
-			jeu->players[0].nbWagons++;
+			jeu->players[0].nbCards++;
 			break;
 		case DRAW_BLIND_CARD:
 			ret = drawBlindCard(&move->drawBlindCard.card);
 			jeu->players[0].cards[move->drawBlindCard.card]++;
 			*lastCard = (*lastCard==NONE) ? move->drawBlindCard.card : NONE;
-			jeu->players[0].nbWagons++;
+			jeu->players[0].nbCards++;
 			
 			break;
 		case DRAW_OBJECTIVES:
-			ret = drawObjectives(move->drawObjectives.objectives);
+			ret=drawObjectives(move->drawObjectives.objectives);
 			/*for(int i=0; i<3; i++){
 				printf("%d. %d (", i, move->drawObjectives.objectives[i].city1);
 				printCity(move->drawObjectives.objectives[i].city1);
@@ -102,21 +103,29 @@ t_return_code playOurMove(t_move* move, t_color* lastCard, t_partie* jeu){
 				else
 					move->chooseObjectives.chosen[j]=0;
 					
-			}*/
+			}
 			//Attribution objectifs
 			for(int j=0; j<3; j++){
 				
-					jeu->players[0].objectives[jeu->players[0].nbObjectives]=move->drawObjectives.objectives[j];
-					move->chooseObjectives.chosen[j]=1;
-					jeu->players[0].nbObjectives++;
+				chosen[j]=1;
+				move->chooseObjectives.chosen[j]=1;
+				jeu->players[0].nbObjectives++;
 				
-			}
+			}*/
 			
-			ret=chooseObjectives(move->chooseObjectives.chosen);
+			///ret=chooseObjectives(chosen);
 			*lastCard = NONE;
 			break;
 		case CHOOSE_OBJECTIVES:
-			ret = chooseObjectives(move->chooseObjectives.chosen);
+			
+			for(int j=0; j<3; j++){
+				
+				chosen[j]=1;
+				move->chooseObjectives.chosen[j]=1;
+				jeu->players[0].nbObjectives++;
+				
+			}
+			ret = chooseObjectives(chosen);
 			*lastCard = NONE;
 			break;
 	}

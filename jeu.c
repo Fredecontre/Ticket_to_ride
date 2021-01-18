@@ -73,7 +73,7 @@ int main(){
    	 	}
    	} 
 	
-	jeu->player=getMap(tracks,jeu->faceUp,cartes);
+	jeu->player=getMap(tracks,faceUp,cartes);
 	
 	//Remplissage tableau des routes
 	for(i=0;i<nbTracks*5;i++){
@@ -99,13 +99,13 @@ int main(){
 	do{
 		if(!replay)
 			printMap();		
-	
+		printf("%d\n",nbTours);
 		if(jeu->player==0){  //Notre tour				
 			//Distribution objectifs au départ
 			if(!nbTours){
-				mouv.type=DRAW_OBJECTIVES;
+				mouv.type=DRAW_OBJECTIVES;				
 			}
-			else {
+			else if(nbTours>1) {
 				
 				for(i=0;i<jeu->players[0].nbObjectives;i++){
 					cheminPlusCourt(jeu->players[0].objectives[i].city1,D,jeu->routes,Prec,jeu->players[0].objectives[i].city2);
@@ -140,7 +140,7 @@ int main(){
 						}
 					}
 					
-					//Voir si on a trouvé une route pour sortir de la boucle
+					//Voir si on a trouvé une route pour sortir de la boucle et jouer le coup
 					if(routeTrouve){
 						routeTrouve=0;
 						break;
@@ -148,12 +148,13 @@ int main(){
 				}
 				
 				if(v==9){  //On a parcouru toutes les cartes sans poser de routes
-					//Verifier s'il y a des cartes face visible pour les routes qui nous intéréssent
+					//Verifier s'il y a des cartes face visible pour les routes qui nous intéressent
 					for(i=0;i<nbRoutesAPrendre;i++){
 						for(j=0;j<5;j++){
-							if(aPrendre[i]->couleur1==faceUp[j]||aPrendre[i]->couleur2==faceUp[j]){
+							//if(aPrendre[i]->couleur1==faceUp[j]||aPrendre[i]->couleur2==faceUp[j]){
+							if(aPrendre[i]->couleur1==mouv.drawCard.faceUp[j]||aPrendre[i]->couleur2==mouv.drawCard.faceUp[j]){
 								mouv.type=DRAW_CARD;
-								mouv.drawCard.card=faceUp[j];
+								mouv.drawCard.card=mouv.drawCard.faceUp[j];
 								//mouv.drawCard.faceUp=faceUp;
 								break;
 							}
@@ -162,18 +163,22 @@ int main(){
 							break;
 						
 					}
-					if(i==nbRoutesAPrendre){  //On a parcouru les cartes face visible sans trouver de carte qui nous intérésse
+					if(i==nbRoutesAPrendre){  //On a parcouru les cartes face visible sans trouver de carte qui nous intéresse
 						mouv.type=DRAW_BLIND_CARD;					
 					}
 			
 				}
-				}
+			}
 			
 				nbTours++;
 				
 				replay = needReplay(&mouv, dernierCoup);
+				
 				retour = playOurMove(&mouv, &dernierCoup,jeu);
-			}
+				if(mouv.type==DRAW_OBJECTIVES)
+					mouv.type=CHOOSE_OBJECTIVES; 
+				
+		}
 		
 			
 			
