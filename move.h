@@ -5,7 +5,7 @@
 #ifndef T2R_TEST_MOVE_H
 #define T2R_TEST_MOVE_H
 
-#define N 100
+#define N 36
 
 #include "TicketToRideAPI.h"
 

@@ -6,14 +6,10 @@
 |       client API in C          |
 |                                |
 * ------------------------------ *
-
-
 Authors: T. Hilaire, J. Brajard
 Licence: GPL
-
 File: clientAPI.c
 	Functions for the Game API (connexion to the Coding Game Server)
-
 Copyright 2016-2020 T. Hilaire, J. Brajard
 */
 

@@ -170,4 +170,3 @@ void sendCGSComment( const char* fct, char* comment);
 
 
 #endif
-

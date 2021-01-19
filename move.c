@@ -85,35 +85,6 @@ t_return_code playOurMove(t_move* move, t_color* lastCard, t_partie* jeu){
 			break;
 		case DRAW_OBJECTIVES:
 			ret=drawObjectives(move->drawObjectives.objectives);
-			/*for(int i=0; i<3; i++){
-				printf("%d. %d (", i, move->drawObjectives.objectives[i].city1);
-				printCity(move->drawObjectives.objectives[i].city1);
-				printf(") -> (");
-				printCity(move->drawObjectives.objectives[i].city2);
-				printf(") %d (%d pts)\n", move->drawObjectives.objectives[i].city2, move->drawObjectives.objectives[i].score);
-			}
-			
-			/*for(int j=0; j<3; j++){
-				scanf("%d",&choix);
-				if(choix==1){
-					jeu->players[0].objectives[jeu->players[0].nbObjectives]=move->drawObjectives.objectives[i];
-					move->chooseObjectives.chosen[j]=1;
-					jeu->players[0].nbObjectives++;
-				}
-				else
-					move->chooseObjectives.chosen[j]=0;
-					
-			}
-			//Attribution objectifs
-			for(int j=0; j<3; j++){
-				
-				chosen[j]=1;
-				move->chooseObjectives.chosen[j]=1;
-				jeu->players[0].nbObjectives++;
-				
-			}*/
-			
-			///ret=chooseObjectives(chosen);
 			*lastCard = NONE;
 			break;
 		case CHOOSE_OBJECTIVES:
@@ -121,7 +92,6 @@ t_return_code playOurMove(t_move* move, t_color* lastCard, t_partie* jeu){
 			for(int j=0; j<3; j++){
 				
 				chosen[j]=1;
-				move->chooseObjectives.chosen[j]=1;
 				jeu->players[0].nbObjectives++;
 				
 			}

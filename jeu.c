@@ -35,9 +35,12 @@ int main(){
 	t_color cartes[4];
 	t_return_code retour;
 	t_color dernierCoup=NONE;
+	int finBoucle=0;
+	int parcoursObjectifs=0;
 	
     int replay=0;
     t_move mouv;
+    t_move mouv_tour_0;
     t_objective obj[3];
     int src, dest,v;
    
@@ -99,19 +102,36 @@ int main(){
 	do{
 		if(!replay)
 			printMap();		
-		printf("%d\n",nbTours);
+		printf("%d\n",jeu->player);
 		if(jeu->player==0){  //Notre tour				
 			//Distribution objectifs au départ
-			if(!nbTours){
-				mouv.type=DRAW_OBJECTIVES;				
+			if(nbTours==0){
+				mouv_tour_0.type=DRAW_OBJECTIVES;	
+				retour = playOurMove(&mouv_tour_0, &dernierCoup,jeu);	
+				mouv_tour_0.type=CHOOSE_OBJECTIVES;	
+				retour = playOurMove(&mouv_tour_0, &dernierCoup,jeu);
+				replay=0;
 			}
-			else if(nbTours>1) {
+			else {
 				
 				for(i=0;i<jeu->players[0].nbObjectives;i++){
-					cheminPlusCourt(jeu->players[0].objectives[i].city1,D,jeu->routes,Prec,jeu->players[0].objectives[i].city2);
-					
 					dest=jeu->players[0].objectives[i].city2; // Destination
 					src=jeu->players[0].objectives[i].city1;
+					cheminPlusCourt(src,D,jeu->routes,Prec,dest);
+			
+					
+					//On regarde si on a fini ses objectifs pour en prendre de nouveaux
+					if(!D[dest]){
+						parcoursObjectifs++;
+						if(parcoursObjectifs==jeu->players[0].nbObjectives){
+							mouv.type=DRAW_OBJECTIVES;
+							retour = playOurMove(&mouv, &dernierCoup,jeu);	
+							mouv.type=CHOOSE_OBJECTIVES;	
+							retour = playOurMove(&mouv, &dernierCoup,jeu);
+							parcoursObjectifs=0;
+						}
+						break;
+					}
 					while (dest!=src){
 						//Vérifier que la route existe et si elle est disponible
 						if(jeu->routes[src][dest]&&jeu->routes[src][dest]->disponible==2){
@@ -123,12 +143,12 @@ int main(){
 				}
 					
 				//On regarde si on peut poser une route
-				for(j=0;j<nbRoutesAPrendre;j++){
+				for(j=0;j<nbRoutesAPrendre&&parcoursObjectifs!=jeu->players[0].nbObjectives;j++){
 							
 				
 					//Vérifier si on a assez de cartes de la bonne couleur
-					for(v=0;v<9;v++){
-						if((jeu->players[0].cards[v]>=aPrendre[j]->longueur)&&(v==aPrendre[j]->couleur1||j==aPrendre[j]->couleur2)){
+					for(v=0;v<jeu->players[0].nbCards;v++){
+						if((jeu->players[0].cards[v]>=aPrendre[j]->longueur)&&(v==aPrendre[j]->couleur1||v==aPrendre[j]->couleur2||aPrendre[j]->couleur1==MULTICOLOR)){
 							//Enregistrer les données pour jouer le coup
 							mouv.type=CLAIM_ROUTE;
 							mouv.claimRoute.city1=aPrendre[j]->city1;
@@ -147,19 +167,20 @@ int main(){
 					}
 				}
 				
-				if(v==9){  //On a parcouru toutes les cartes sans poser de routes
+				if(v==jeu->players[0].nbCards){  //On a parcouru toutes les cartes sans poser de routes
 					//Verifier s'il y a des cartes face visible pour les routes qui nous intéressent
 					for(i=0;i<nbRoutesAPrendre;i++){
 						for(j=0;j<5;j++){
-							//if(aPrendre[i]->couleur1==faceUp[j]||aPrendre[i]->couleur2==faceUp[j]){
+						
 							if(aPrendre[i]->couleur1==mouv.drawCard.faceUp[j]||aPrendre[i]->couleur2==mouv.drawCard.faceUp[j]){
 								mouv.type=DRAW_CARD;
 								mouv.drawCard.card=mouv.drawCard.faceUp[j];
-								//mouv.drawCard.faceUp=faceUp;
+								
+								finBoucle=1;
 								break;
 							}
 						}
-						if(j<5) //On a rencontré une carte qui nous intéresse dans la pioche, on joue le coup
+						if(finBoucle) //On a rencontré une carte qui nous intéresse dans la pioche, on joue le coup
 							break;
 						
 					}
@@ -168,15 +189,20 @@ int main(){
 					}
 			
 				}
+				
 			}
 			
-				nbTours++;
+			
+				
 				
 				replay = needReplay(&mouv, dernierCoup);
 				
-				retour = playOurMove(&mouv, &dernierCoup,jeu);
-				if(mouv.type==DRAW_OBJECTIVES)
-					mouv.type=CHOOSE_OBJECTIVES; 
+			
+				if(nbTours>0&&mouv.type!=CHOOSE_OBJECTIVES)
+					retour = playOurMove(&mouv, &dernierCoup,jeu);
+				
+				nbTours++;
+				
 				
 		}
 		

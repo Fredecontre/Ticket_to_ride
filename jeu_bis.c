@@ -26,66 +26,64 @@ int main(){
 	char gameName[50];
 	int nbCities;
 	int nbTracks;
+	int choix;
+	int nbTours=0;
 	
 	t_color faceUp[5];
 	t_color cartes[4];
 	t_return_code retour;
 	t_color dernierCoup=NONE;
-	
     int replay=0;
     t_move mouv;
-    t_objective obj[3];
-    int src, dest;
-    int D[200];
   
-    int nbTours=0;
-    int i=0;
-    int choix;
-    
-    t_joueur* joueur0=malloc(sizeof(t_joueur));  //Nous
+    t_objective obj[3];
 
-    t_joueur* joueur1=malloc(sizeof(t_joueur));  //L'opposant
+   
+    int i=0,j=0;
+    
     
     t_partie* jeu=malloc(sizeof(t_partie));
-  
-    
+
   
     
 
     int* tracks;
 	
-	connectToServer("li1417-56.members.linode.com",5678,"Frederick");
+	connectToServer("li1417-56.members.linode.com",1234,"Frederick");
 	
 	
-	tracks=malloc(5*nbTracks*sizeof(int));
 	
 	waitForT2RGame("TRAINING PLAY_RANDOM timeout=10000",gameName, &nbCities, &nbTracks);
 	
+	tracks=malloc(5*nbTracks*sizeof(int));
+	
+	//Allocation tableau villes
+	for(i=0;i<nbCities;i++){
+    	for(j=0;j<nbCities;j++){
+   	 		jeu->routes[i][j]=malloc(sizeof(t_route));
+   	 		
+   	 	}
+   	} 
+	
 	jeu->player=getMap(tracks,faceUp,cartes);
 	
-	 /*Allocation tableau villes*/
-    for(i=0;i<100;i++){
-    	for(j=0;j<100;j++){
-   	 		jeu->routes[i][j]=malloc(sizeof(t_route));
-   	 	}
-   	}
-	
-	  //Remplissage tableau des routes
-	for(i=0;i<nbCities;i++){
-		T[tracks[i]][tracks[i+1]]->city1=tracks[i];
-		T[tracks[i]][tracks[i+1]]->city2=tracks[i+1];
-		T[tracks[i]][tracks[i+1]]->longueur=tracks[i+2];
-		T[tracks[i]][tracks[i+1]]->couleur1=tracks[i+3];
-		T[tracks[i]][tracks[i+1]]->couleur2=tracks[i+4];
-		
+	//Remplissage tableau des routes
+	for(i=0;i<nbTracks*5;i++){
+
+		jeu->routes[tracks[i]][tracks[i+1]]->city1=tracks[i];
+		jeu->routes[tracks[i]][tracks[i+1]]->city2=tracks[i+1];
+		jeu->routes[tracks[i]][tracks[i+1]]->longueur=tracks[i+2];
+		jeu->routes[tracks[i]][tracks[i+1]]->couleur1=tracks[i+3];
+		jeu->routes[tracks[i]][tracks[i+1]]->couleur2=tracks[i+4];
+		jeu->routes[tracks[i]][tracks[i+1]]->disponible=2; //Route est libre		
 		
 		i=i+5;   //On passe à la route suivante
 	}
 	
-	
-	
-	for(int i=0; i<3 ; i++){
-		ajouteCarte(joueur0,cartes[i]);
+  
+	//Attritubion des cartes wagon au début
+	for(i=0; i<3 ; i++){
+		ajouteCarte(&jeu->players[0],cartes[i]);
 	}	
 
 	
@@ -111,7 +109,7 @@ int main(){
 				for(i=0; i<3; i++){
 					scanf("%d",&choix);
 					if(choix==1){
-						jeu->players[0].objectives[joueur0->nbObjectives]=obj[i];
+						jeu->players[0].objectives[jeu->players[0].nbObjectives]=obj[i];
 						mouv.chooseObjectives.chosen[i]=1;
 						jeu->players[0].nbObjectives++;
 					}
@@ -144,7 +142,7 @@ int main(){
 					ajouteCarte(&jeu->players[1],mouv.drawCard.card);
 				}
 				else if(mouv.type==CLAIM_ROUTE){
-					for(int j=0; j<mouv.claimRoute.nbLocomotives;j++){
+					for(j=0; j<mouv.claimRoute.nbLocomotives;j++){
 						retireCarte(&jeu->players[1],mouv.claimRoute.color);
 					}
 				}
