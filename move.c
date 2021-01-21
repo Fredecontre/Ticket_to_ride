@@ -84,7 +84,10 @@ t_return_code playOurMove(t_move* move, t_color* lastCard, t_partie* jeu){
 			
 			break;
 		case DRAW_OBJECTIVES:
-			ret=drawObjectives(move->drawObjectives.objectives);
+			
+			ret=drawObjectives(jeu->objectifs);
+
+			
 			*lastCard = NONE;
 			break;
 		case CHOOSE_OBJECTIVES:
@@ -92,6 +95,7 @@ t_return_code playOurMove(t_move* move, t_color* lastCard, t_partie* jeu){
 			for(int j=0; j<3; j++){
 				
 				chosen[j]=1;
+                jeu->players[0].objectives[j+jeu->players[0].nbObjectives]=jeu->objectifs[j];
 				jeu->players[0].nbObjectives++;
 				
 			}
@@ -133,12 +137,14 @@ void cheminPlusCourt(int src,int D[N],t_route* G[N][N],int Prec[N], int dest){
 	D[src]=0;
 	u=src;
 	while(u!=dest){
+		
 		u=distanceMini(D,Visite);
 		Visite[u]=1;
 		for(v=0;v<N;v++){
-			if ((Visite[v]==0) && (G[u][v]&&G[u][v]->disponible) && (D[u] + G[u][v]->longueur < D[v])){
+			if ((Visite[v]==0) && (G[u][v]) && (D[u] + G[u][v]->longueur < D[v])){
 				D[v]=D[u] + G[u][v]->longueur;
 				Prec[v]=u;
+				
 			}
 		}
 	}

@@ -39,10 +39,10 @@ int main(){
 	int parcoursObjectifs=0;
 	
     int replay=0;
-    t_move mouv;
-    t_move mouv_tour_0;
+    t_move* mouv;
+
     t_objective obj[3];
-    int src, dest,v;
+    int src=0, dest=0,v=0;
    
   
     int nbTours=0;
@@ -51,6 +51,7 @@ int main(){
     int D[50];
     int Prec[50];
     t_route * aPrendre[100];
+    int coupJoue=0;
     
     
     t_partie* jeu=malloc(sizeof(t_partie));
@@ -64,7 +65,7 @@ int main(){
 	
 	
 	
-	waitForT2RGame("TRAINING PLAY_RANDOM timeout=10000",gameName, &nbCities, &nbTracks);
+	waitForT2RGame("TRAINING PLAY_RANDOM",gameName, &nbCities, &nbTracks);
 	
 	tracks=malloc(5*nbTracks*sizeof(int));
 	
@@ -100,82 +101,109 @@ int main(){
 	
 	//boucle du jeu
 	do{
-		if(!replay)
-			printMap();		
+
+		/*if(!replay){
+			printMap();
+		}*/
+			
 		printf("%d\n",jeu->player);
-		if(jeu->player==0){  //Notre tour				
+		printf("%d\n",mouv->type);
+		
+		
+		if(jeu->player==0){  //Notre tour
+            
 			//Distribution objectifs au départ
 			if(nbTours==0){
-				mouv_tour_0.type=DRAW_OBJECTIVES;	
-				retour = playOurMove(&mouv_tour_0, &dernierCoup,jeu);	
-				mouv_tour_0.type=CHOOSE_OBJECTIVES;	
-				retour = playOurMove(&mouv_tour_0, &dernierCoup,jeu);
+				mouv->type=DRAW_OBJECTIVES;	
+				dernierCoup=NONE;
+				retour = playOurMove(mouv, &dernierCoup,jeu);	
+				mouv->type=CHOOSE_OBJECTIVES;	
+				retour = playOurMove(mouv, &dernierCoup,jeu);
+				dernierCoup=NONE;
 				replay=0;
+			
+		
 			}
 			else {
-				
+				//Gestion des objectifs
 				for(i=0;i<jeu->players[0].nbObjectives;i++){
-					dest=jeu->players[0].objectives[i].city2; // Destination
-					src=jeu->players[0].objectives[i].city1;
+					dest=jeu->players[0].objectives[i].city1; // Destination
+					src=jeu->players[0].objectives[i].city2;
 					cheminPlusCourt(src,D,jeu->routes,Prec,dest);
-			
+					
+				
 					
 					//On regarde si on a fini ses objectifs pour en prendre de nouveaux
-					if(!D[dest]){
+					/*if(!D[dest]){
+						
 						parcoursObjectifs++;
 						if(parcoursObjectifs==jeu->players[0].nbObjectives){
-							mouv.type=DRAW_OBJECTIVES;
-							retour = playOurMove(&mouv, &dernierCoup,jeu);	
-							mouv.type=CHOOSE_OBJECTIVES;	
-							retour = playOurMove(&mouv, &dernierCoup,jeu);
+							mouv->type=DRAW_OBJECTIVES;
+							retour = playOurMove(mouv, &dernierCoup,jeu);	
+							mouv->type=CHOOSE_OBJECTIVES;	
+							retour = playOurMove(mouv, &dernierCoup,jeu);
 							parcoursObjectifs=0;
+							
 						}
-						break;
-					}
+						
+					}*/
 					while (dest!=src){
+						
+					
 						//Vérifier que la route existe et si elle est disponible
 						if(jeu->routes[src][dest]&&jeu->routes[src][dest]->disponible==2){
 							aPrendre[nbRoutesAPrendre]=jeu->routes[src][dest];
-							dest=Prec[dest];
 							nbRoutesAPrendre++;
 						}
+						dest=Prec[dest];
 					}
 				}
 					
 				//On regarde si on peut poser une route
-				for(j=0;j<nbRoutesAPrendre&&parcoursObjectifs!=jeu->players[0].nbObjectives;j++){
+				for(j=0;j<nbRoutesAPrendre;j++){
 							
-				
+					
 					//Vérifier si on a assez de cartes de la bonne couleur
 					for(v=0;v<jeu->players[0].nbCards;v++){
-						if((jeu->players[0].cards[v]>=aPrendre[j]->longueur)&&(v==aPrendre[j]->couleur1||v==aPrendre[j]->couleur2||aPrendre[j]->couleur1==MULTICOLOR)){
+						
+						if(((jeu->players[0].cards[v]>=aPrendre[j]->longueur)&&aPrendre[j])&&(v==aPrendre[j]->couleur1||v==aPrendre[j]->couleur2||aPrendre[j]->couleur1==MULTICOLOR)){
 							//Enregistrer les données pour jouer le coup
-							mouv.type=CLAIM_ROUTE;
-							mouv.claimRoute.city1=aPrendre[j]->city1;
-							mouv.claimRoute.city2=aPrendre[j]->city2;
-							mouv.claimRoute.color=aPrendre[j]->couleur1;
-							mouv.claimRoute.nbLocomotives=aPrendre[j]->longueur;
+							mouv->type=CLAIM_ROUTE;
+							mouv->claimRoute.city1=aPrendre[j]->city1;
+							mouv->claimRoute.city2=aPrendre[j]->city2;
+							mouv->claimRoute.color=aPrendre[j]->couleur1;
+							mouv->claimRoute.nbLocomotives=aPrendre[j]->longueur;
+							retour = playOurMove(mouv, &dernierCoup,jeu);
+							replay=0;
 							routeTrouve=1;
 							break;
 						}
-					}
+					
 					
 					//Voir si on a trouvé une route pour sortir de la boucle et jouer le coup
 					if(routeTrouve){
 						routeTrouve=0;
 						break;
 					}
+					}
 				}
 				
 				if(v==jeu->players[0].nbCards){  //On a parcouru toutes les cartes sans poser de routes
+				
 					//Verifier s'il y a des cartes face visible pour les routes qui nous intéressent
 					for(i=0;i<nbRoutesAPrendre;i++){
+						
 						for(j=0;j<5;j++){
 						
-							if(aPrendre[i]->couleur1==mouv.drawCard.faceUp[j]||aPrendre[i]->couleur2==mouv.drawCard.faceUp[j]){
-								mouv.type=DRAW_CARD;
-								mouv.drawCard.card=mouv.drawCard.faceUp[j];
-								
+							if(aPrendre[i]->couleur1==mouv->drawCard.faceUp[j]||aPrendre[i]->couleur2==mouv->drawCard.faceUp[j]){
+								mouv->type=DRAW_CARD;
+								mouv->drawCard.card=mouv->drawCard.faceUp[j];
+								retour = playOurMove(mouv, &dernierCoup,jeu);
+								mouv->type=DRAW_BLIND_CARD;	
+								dernierCoup=NONE;
+								retour = playOurMove(mouv, &dernierCoup,jeu);
+								dernierCoup=NONE;
+								replay=0;
 								finBoucle=1;
 								break;
 							}
@@ -185,23 +213,38 @@ int main(){
 						
 					}
 					if(i==nbRoutesAPrendre){  //On a parcouru les cartes face visible sans trouver de carte qui nous intéresse
-						mouv.type=DRAW_BLIND_CARD;					
+						mouv->type=DRAW_BLIND_CARD;	
+						dernierCoup=NONE;
+						retour = playOurMove(mouv, &dernierCoup,jeu);
+						dernierCoup=NONE;
+						mouv->type=DRAW_BLIND_CARD;	
+						retour = playOurMove(mouv, &dernierCoup,jeu);
+						dernierCoup=NONE;
+						replay=0;					
 					}
 			
 				}
+				coupJoue=1;
 				
 			}
+			/*On n'a pas joué de coup, on tire des cartes de la pioche par défaut*/
+			if(!coupJoue&&nbTours){
+					mouv->type=DRAW_BLIND_CARD;	
+					dernierCoup=NONE;
+					retour = playOurMove(mouv, &dernierCoup,jeu);
+					dernierCoup=NONE;
+					mouv->type=DRAW_BLIND_CARD;	
+					retour = playOurMove(mouv, &dernierCoup,jeu);
+					dernierCoup=NONE;
+					
+					
+			}
+			coupJoue=0;
+			replay=0;
 			
-			
-				
-				
-				replay = needReplay(&mouv, dernierCoup);
 				
 			
-				if(nbTours>0&&mouv.type!=CHOOSE_OBJECTIVES)
-					retour = playOurMove(&mouv, &dernierCoup,jeu);
-				
-				nbTours++;
+			nbTours++;
 				
 				
 		}
@@ -212,23 +255,25 @@ int main(){
 		
 		if(jeu->player==1) { //Tour de l'adversaire
 		 	
-			retour=getMove(&mouv,&replay);
-			
-			if(mouv.type==DRAW_BLIND_CARD){
-				ajouteCarte(&jeu->players[1],mouv.drawBlindCard.card);
+			retour=getMove(mouv,&replay);
+
+			if(mouv->type==DRAW_BLIND_CARD){
+				ajouteCarte(&jeu->players[1],mouv->drawBlindCard.card);
 			}
-			else if(mouv.type==DRAW_CARD){
-				ajouteCarte(&jeu->players[1],mouv.drawCard.card);
+			else if(mouv->type==DRAW_CARD){
+				ajouteCarte(&jeu->players[1],mouv->drawCard.card);
 			}
-			else if(mouv.type==CLAIM_ROUTE){
-				for(j=0; j<mouv.claimRoute.nbLocomotives;j++){
-					retireCarte(&jeu->players[1],mouv.claimRoute.color);
+			else if(mouv->type==CLAIM_ROUTE){
+				for(j=0; j<mouv->claimRoute.nbLocomotives;j++){
+					retireCarte(&jeu->players[1],mouv->claimRoute.color);
 				}
 			}
 		}
 		//Changer de joueur
 		if (retour==NORMAL_MOVE&& !replay)
 			jeu->player=!jeu->player;
+			
+			
 			
 			
 			
@@ -247,6 +292,7 @@ int main(){
 	
 	
 	free(tracks);
+	
 
 	closeConnection();
 	

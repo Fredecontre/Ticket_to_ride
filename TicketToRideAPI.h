@@ -112,7 +112,7 @@ typedef struct{
 	char name[20];					/* name of the player */
 	int nbWagons;					/* number of wagons */
 	int nbCards;					/* number of cards */
-	int cards[10];					/* number of cards of each color, ie cards[YELLOW] is the number of YELLOW cards */
+	int cards[100];					/* number of cards of each color, ie cards[YELLOW] is the number of YELLOW cards */
 	int nbObjectives;				/* number of objectives */
 	t_objective objectives[20];		/* objectives, only objectives with index < nbObjectives are available */
 } t_joueur;
@@ -135,7 +135,8 @@ typedef struct{
 	t_color faceUp[5];				/* face up cards */
 	int player;						/* player who plays: 0 == US, 1 == OPPONNENT */
 	t_joueur players[2];
-	t_route *routes[100][100];
+	t_route *routes[36][36];
+	t_objective objectifs[3]    /*Pour enregistrer les objectifs à l'appel d'un drawObjectives*/
 } t_partie;
 
 
